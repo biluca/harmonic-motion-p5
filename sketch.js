@@ -1,9 +1,14 @@
-SCREEN_SIZE = 600;
-GRID_SIZE = SCREEN_SIZE / 5;
+SCREEN_SIZE = 900;
+GRID_STROKE_WEIGHT = 0;
+GRID_COUNT = 6;
+CIRCLE_RADIUS = (SCREEN_SIZE / GRID_COUNT) * 0.40;
+CIRCLE_DIAMETER = CIRCLE_RADIUS * 2;
+GRID_SIZE = SCREEN_SIZE / GRID_COUNT;
+GRID_OFF_SET = (GRID_SIZE - CIRCLE_DIAMETER) / 2;
+
+const grid = new Grid(GRID_COUNT, GRID_SIZE, GRID_STROKE_WEIGHT);
 var horizontal_circles = [];
 var vertical_circles = [];
-
-let capture = true;
 
 function setup() {
   createCanvas(SCREEN_SIZE, SCREEN_SIZE);
@@ -19,12 +24,9 @@ function setup() {
 
 }
 
-var my_circle_index = 0;
-var my_circle_a_index = 0;
-
 function draw() {
   background(0);
-  draw_grid();
+  grid.show()
 
   for (var i = 0; i < vertical_circles.length; i++) {
     vertical_circles[i].show();
@@ -37,28 +39,15 @@ function draw() {
   for (var i = 0; i < combination_vectors.length; i++) {
     combination_vectors[i].show();
   }
-
-  if (capture) {
-    //saveCanvas("frame_" + frameCount, "png"); // Save the current frame as an image
-    frameCount++;
-  }
-
-  if (frameCount >= 360) {
-    capture = false;
-    //noLoop();
-  }
 }
 
 function create_horizontal_circles() {
-  var circle_size = 40;
-  var offset = 100;
-  var padding = 10;
-  speed_array = [0, 5, 4, 3, 2, 1];
+  speed_array = create_speed_array(false)
   horizontal_circles = [];
 
-  for (var i = 1; i <= 5; i++) {
-    var center_point = new Point(i * 100 + 50, circle_size + 10);
-    my_circle = new Circle(center_point, circle_size, speed_array[i], 10);
+  for (var i = 1; i < GRID_COUNT; i++) {
+    var center_point = new Point((i * GRID_SIZE) + CIRCLE_RADIUS + GRID_OFF_SET, CIRCLE_RADIUS + GRID_OFF_SET);
+    my_circle = new Circle(center_point, CIRCLE_RADIUS, speed_array[i], 10);
     append(horizontal_circles, my_circle);
   }
 
@@ -66,19 +55,30 @@ function create_horizontal_circles() {
 }
 
 function create_vertical_circles() {
-  var circle_size = 40;
-  var offset = 100;
-  var padding = 10;
-  speed_array = [0, 1, 2, 3, 4, 5];
+  speed_array = create_speed_array(true)
   vertical_circles = [];
 
-  for (var i = 1; i <= 5; i++) {
-    var center_point = new Point(circle_size + 10, i * 100 + 50);
-    my_circle = new Circle(center_point, circle_size, speed_array[i], 10);
+  for (var i = 1; i < GRID_COUNT; i++) {
+    var center_point = new Point(CIRCLE_RADIUS + GRID_OFF_SET, (i * GRID_SIZE) + CIRCLE_RADIUS + GRID_OFF_SET);
+    my_circle = new Circle(center_point, CIRCLE_RADIUS, speed_array[i], 10);
     append(vertical_circles, my_circle);
   }
 
   return vertical_circles;
+}
+
+function create_speed_array(negative) {
+  speed_array = [];
+
+  for (i = 0; i < GRID_COUNT; i++) {
+    append(speed_array, i);
+  }
+
+  if (negative) {
+    return (speed_array);
+  } else {
+    return speed_array;
+  }
 }
 
 function create_combination_vectors(horizontal_circles, vertical_circles) {
@@ -121,13 +121,4 @@ function create_combination_vectors(horizontal_circles, vertical_circles) {
   }
 
   return vectors;
-}
-
-function draw_grid() {
-  stroke(128);
-  strokeWeight(0);
-  for (var i = 0; i < GRID_SIZE; i++) {
-    line(i * 100, 0, i * 100, height);
-    line(0, i * 100, width, i * 100);
-  }
 }

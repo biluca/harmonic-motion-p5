@@ -62,8 +62,6 @@ class Circle {
     // x(θ) = Cx + R * cos(θ)
     // y(θ) = Cy + R * sin(θ)
 
-    var coordinates_limit = 360 / this.precision;
-
     for (var i = 0; i < 360; i = i + this.precision) {
       var x = this.center_point.x + this.radius * cos(i);
       var y = this.center_point.y + this.radius * sin(i);
